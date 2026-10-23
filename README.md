@@ -104,6 +104,10 @@ python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workfl
 ```
 .
 ├── README.md
+├── Projet Workflow/
+│   ├── briefing-matinal.workflow.ts workflow au format TypeScript du SDK n8n
+│   ├── generate_workflow_ts.py      régénère le .ts depuis les prompts
+│   └── README.md
 ├── Skills/
 │   ├── interview/SKILL.md           clarifier une idée de projet par des questions guidées
 │   ├── hostile-review/SKILL.md      audit adversarial avant livraison
@@ -123,6 +127,10 @@ python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workfl
     └── workflow/
         └── briefing-matinal.json        workflow n8n importable
 ```
+
+## Workflow en TypeScript
+
+Le dossier [`Projet Workflow/`](Projet%20Workflow/) contient le même workflow au format TypeScript du SDK n8n : [`briefing-matinal.workflow.ts`](Projet%20Workflow/briefing-matinal.workflow.ts).
 
 ## Skills
 
