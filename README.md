@@ -104,9 +104,9 @@ python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workfl
 ```
 .
 ├── README.md
-├── LICENSE
-├── .gitignore
 └── Workflow.ts/
+    ├── LICENSE
+    ├── .gitignore
     ├── docs/
     │   └── exemple-briefing.html        aperçu du rendu (données fictives)
     ├── prompts/
@@ -122,4 +122,4 @@ python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workfl
 
 ## Licence
 
-[MIT](LICENSE)
+[MIT](Workflow.ts/LICENSE)
