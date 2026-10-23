@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Génère briefing-matinal.workflow.ts (SDK TypeScript n8n) à partir des prompts.
 
-Les prompts de ../Workflow.ts/prompts/ sont insérés comme chaînes concaténées
+Les prompts de Projet en JSON/prompts/ sont insérés comme chaînes concaténées
 (une ligne de prompt = une ligne de code), ce qui reste lisible et valide dans
 le sous-ensemble TypeScript du SDK n8n.
 
@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PROMPTS = HERE.parent / "Workflow.ts" / "prompts"
+PROMPTS = HERE / "Projet en JSON" / "prompts"
 OUT = HERE / "briefing-matinal.workflow.ts"
 
 
