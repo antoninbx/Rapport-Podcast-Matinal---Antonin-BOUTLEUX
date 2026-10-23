@@ -104,6 +104,10 @@ python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workfl
 ```
 .
 ├── README.md
+├── Skills/
+│   ├── interview/SKILL.md           clarifier une idée de projet par des questions guidées
+│   ├── hostile-review/SKILL.md      audit adversarial avant livraison
+│   └── doubt-driven-dev/SKILL.md    vérification systématique des faits et du code
 └── Workflow.ts/
     ├── LICENSE
     ├── .gitignore
@@ -119,6 +123,10 @@ python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workfl
     └── workflow/
         └── briefing-matinal.json        workflow n8n importable
 ```
+
+## Skills
+
+Le dossier [`Skills/`](Skills/) regroupe trois skills Claude utilisés pendant la construction de ce projet : `interview`, `hostile-review` et `doubt-driven-dev` (vérification rigoureuse des informations).
 
 ## Licence
 
