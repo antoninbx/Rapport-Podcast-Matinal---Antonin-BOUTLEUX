@@ -6,7 +6,7 @@ Un workflow [n8n](https://n8n.io) qui envoie chaque matin, par Gmail :
 - un **podcast MP3 d'environ 3 minutes**, drôle sur les sujets légers et sobre sur les sujets graves, qui suit la trame du mail ;
 - le **dimanche**, en plus, un **résumé de la semaine**.
 
-L'aperçu du rendu (données fictives) est dans [`docs/exemple-briefing.html`](docs/exemple-briefing.html).
+L'aperçu du rendu (données fictives) est dans [`Workflow.ts/docs/exemple-briefing.html`](Workflow.ts/docs/exemple-briefing.html).
 
 ## Fonctionnement
 
@@ -34,7 +34,7 @@ flowchart LR
 ## Installation
 
 1. **Prérequis** : une instance n8n (Cloud ou auto-hébergée) et le nœud communautaire `@brave/n8n-nodes-brave-search`.
-2. **Importer** [`workflow/briefing-matinal.json`](workflow/briefing-matinal.json) : *Workflows → Import from file*.
+2. **Importer** [`Workflow.ts/workflow/briefing-matinal.json`](Workflow.ts/workflow/briefing-matinal.json) : *Workflows → Import from file*.
 3. **Associer les identifiants** (aucun identifiant n'est versionné dans ce dépôt) :
 
    | Nœuds | Identifiant à créer |
@@ -54,8 +54,8 @@ flowchart LR
 |---|---|
 | Changer l'heure d'envoi | `Every Day at 07:00AM` (heure) et `Delay 2h` (décalage week-end) |
 | Changer la voix | `Podcast Voice (MP3)` → *Voice* (`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`) |
-| Changer la longueur du podcast | `prompts/podcast-writer.user.md` (bloc `<duree_et_longueur>`) |
-| Changer les rubriques ou le ton | `prompts/news-redactor.user.md` et `prompts/podcast-writer.user.md` |
+| Changer la longueur du podcast | `Workflow.ts/prompts/podcast-writer.user.md` (bloc `<duree_et_longueur>`) |
+| Changer les rubriques ou le ton | `Workflow.ts/prompts/news-redactor.user.md` et `Workflow.ts/prompts/podcast-writer.user.md` |
 | Changer de modèle | Les 4 nœuds `Using Gemini*` |
 
 ## Les prompts
@@ -73,10 +73,10 @@ Les prompts suivent une structure XML unique, du même modèle pour les deux age
 <inputs>        → variables du jour injectées par n8n (dates, briefing…)
 ```
 
-Ils sont stockés en fichiers lisibles dans [`prompts/`](prompts/), puis injectés dans le workflow par le script de build :
+Ils sont stockés en fichiers lisibles dans [`Workflow.ts/prompts/`](Workflow.ts/prompts/), puis injectés dans le workflow par le script de build :
 
 ```bash
-python3 scripts/build_workflow.py   # régénère workflow/briefing-matinal.json
+python3 Workflow.ts/scripts/build_workflow.py   # régénère Workflow.ts/workflow/briefing-matinal.json
 ```
 
 **Règles anti-erreurs** (les erreurs factuelles sont le principal risque d'un briefing généré par IA) :
@@ -105,17 +105,19 @@ python3 scripts/build_workflow.py   # régénère workflow/briefing-matinal.json
 .
 ├── README.md
 ├── LICENSE
-├── docs/
-│   └── exemple-briefing.html        aperçu du rendu (données fictives)
-├── prompts/
-│   ├── news-redactor.system.md      rôle de l'agent de rédaction
-│   ├── news-redactor.user.md        instructions, exemples, format, inputs
-│   ├── podcast-writer.system.md     rôle de l'animateur du podcast
-│   └── podcast-writer.user.md       instructions, exemples, format, inputs
-├── scripts/
-│   └── build_workflow.py            génère le JSON du workflow
-└── workflow/
-    └── briefing-matinal.json        workflow n8n importable
+├── .gitignore
+└── Workflow.ts/
+    ├── docs/
+    │   └── exemple-briefing.html        aperçu du rendu (données fictives)
+    ├── prompts/
+    │   ├── news-redactor.system.md      rôle de l'agent de rédaction
+    │   ├── news-redactor.user.md        instructions, exemples, format, inputs
+    │   ├── podcast-writer.system.md     rôle de l'animateur du podcast
+    │   └── podcast-writer.user.md       instructions, exemples, format, inputs
+    ├── scripts/
+    │   └── build_workflow.py            génère le JSON du workflow
+    └── workflow/
+        └── briefing-matinal.json        workflow n8n importable
 ```
 
 ## Licence
