@@ -9,15 +9,8 @@ Un workflow [n8n](https://n8n.io) qui envoie chaque matin, par Gmail :
 L'aperçu du rendu (données fictives) est dans [`Projet Workflow/Projet en JSON/docs/exemple-briefing.html`](Projet%20Workflow/Projet%20en%20JSON/docs/exemple-briefing.html).
 
 ## Fonctionnement
+<img width="1181" height="331" alt="image" src="https://github.com/user-attachments/assets/7b6bca70-2b5f-473d-a06c-005f7b110987" />
 
-```mermaid
-flowchart LR
-    T[Déclencheur 7h] --> W{Week-end ?}
-    W -- non --> N
-    W -- oui --> D[Attente 2h = 9h] --> N
-    N[News Redactor<br/>agent Gemini + Brave Search] --> P[Podcast Writer<br/>agent Gemini]
-    P --> V[Voix MP3<br/>OpenAI tts-1-hd] --> F[Nom du fichier] --> M[Gmail<br/>HTML + MP3]
-```
 
 | Étape | Nœud | Rôle |
 |---|---|---|
@@ -87,17 +80,6 @@ python3 "Projet Workflow/Projet en JSON/scripts/build_workflow.py"   # régénè
 - les faits de plus de 2 jours sont datés ; les titres de pages d'accueil sans détail sont écartés ;
 - football : 5 matchs maximum, scores exacts uniquement, deux recherches obligatoires avant d'écrire « Pas de grand match hier ».
 
-## Limites connues
-
-- **Pas de vérification indépendante.** Les extraits Brave sont courts (souvent des titres de pages d'accueil) et le modèle peut paraphraser trop librement. Les règles ci-dessus réduisent le risque sans le supprimer : relire le mail reste nécessaire pour un usage critique.
-- Le podcast peut contenir de petites erreurs d'oral (sigles ou numéros d'unités militaires mal prononcés).
-- Les tests envoient de vrais mails et consomment des crédits d'API (Gemini, Brave, synthèse vocale).
-
-## Pistes d'amélioration
-
-- Passer les actualités par l'opération `news` de Brave (articles datés) plutôt que par la recherche web.
-- Ajouter un second agent qui vérifie chaque fait du mail contre les extraits avant l'envoi.
-- Faire de la structure des prompts un modèle réutilisable pour d'autres briefings.
 
 ## Structure du dépôt
 
