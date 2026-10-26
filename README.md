@@ -6,6 +6,10 @@ Un workflow [n8n](https://n8n.io) qui, chaque matin, envoie par Gmail :
 - un **podcast MP3 d'environ 3 minutes** en pièce jointe, drôle sur les sujets légers et sobre sur les sujets graves, qui suit la trame du mail ;
 - le **dimanche**, en plus, un **résumé de la semaine**.
 
+## Vidéo de présentation
+
+▶️ [Voir la vidéo de présentation du projet](https://www.loom.com/share/a62c3ddd27794b5aaafa90a6b7b593e1)
+
 ## Le workflow
 
 <img width="1185" height="309" alt="image" src="https://github.com/user-attachments/assets/3f55c7eb-7f91-4dc5-aea2-6079880bde8d" />
