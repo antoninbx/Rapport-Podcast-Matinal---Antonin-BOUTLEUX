@@ -9,7 +9,7 @@ Un workflow [n8n](https://n8n.io) qui envoie chaque matin, par Gmail :
 L'aperçu du rendu (données fictives) est dans [`Projet Workflow/Projet en JSON/docs/exemple-briefing.html`](Projet%20Workflow/Projet%20en%20JSON/docs/exemple-briefing.html).
 
 ## Fonctionnement
-<img width="1181" height="331" alt="image" src="https://github.com/user-attachments/assets/7b6bca70-2b5f-473d-a06c-005f7b110987" />
+<img width="1185" height="309" alt="image" src="https://github.com/user-attachments/assets/3f55c7eb-7f91-4dc5-aea2-6079880bde8d" />
 
 
 | Étape | Nœud | Rôle |
