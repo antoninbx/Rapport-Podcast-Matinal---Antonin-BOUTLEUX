@@ -1,123 +1,80 @@
-# ☀️ Briefing matinal automatisé : n8n + Gemini + Brave Search
+# ☀️ Briefing matinal automatisé : mail + podcast
 
-Un workflow [n8n](https://n8n.io) qui envoie chaque matin, par Gmail :
+Un workflow [n8n](https://n8n.io) qui, chaque matin, envoie par Gmail :
 
-- un **mail HTML moderne** (météo, football de la veille avec scores exacts, actualités par rubrique, « ce jour dans l'histoire », citation) ;
-- un **podcast MP3 d'environ 3 minutes**, drôle sur les sujets légers et sobre sur les sujets graves, qui suit la trame du mail ;
+- un **mail HTML** : météo de Paris, football de la veille, actualités par rubrique, « ce jour dans l'histoire » et une citation ;
+- un **podcast MP3 d'environ 3 minutes** en pièce jointe, drôle sur les sujets légers et sobre sur les sujets graves, qui suit la trame du mail ;
 - le **dimanche**, en plus, un **résumé de la semaine**.
 
-L'aperçu du rendu (données fictives) est dans [`Projet Workflow/Projet en JSON/docs/exemple-briefing.html`](Projet%20Workflow/Projet%20en%20JSON/docs/exemple-briefing.html).
+## Le workflow
 
-## Fonctionnement
 <img width="1185" height="309" alt="image" src="https://github.com/user-attachments/assets/3f55c7eb-7f91-4dc5-aea2-6079880bde8d" />
 
+Le fichier du workflow est [`Projet Workflow/workflow.ts`](Projet%20Workflow/workflow.ts). Il contient tout : les nœuds, les modèles et les prompts.
 
-| Étape | Nœud | Rôle |
+## Comment ça marche
+
+| Étape | Nœud | Ce qu'il fait |
 |---|---|---|
-| 1 | `Every Day at 07:00AM` | Déclenche le workflow tous les jours à 7h (Europe/Paris) |
-| 2 | `If It Is Week End` + `Delay 2h` | Samedi et dimanche, attend 2h pour envoyer à 9h |
-| 3 | `News Redactor` | Agent IA : fait au moins 10 recherches Brave, rédige le mail HTML |
-| 4 | `Podcast Writer` | Agent IA : transforme le briefing en script oral humoristique |
-| 5 | `Podcast Voice (MP3)` | Synthèse vocale (voix `nova`) |
-| 6 | `Nom du fichier MP3` | Nomme la pièce jointe `briefing-AAAA-MM-JJ.mp3` |
-| 7 | `Send Final Mail` | Envoie le mail HTML avec le MP3 en pièce jointe |
+| 1 | **Tous les jours à 7h** | Déclenche le workflow chaque matin à 7h (heure de Paris). |
+| 2 | **Si c'est le Week-end** | Teste si l'on est samedi ou dimanche. |
+| 3 | **Retarder de 2h, donc envoyer à 9h** | Uniquement le week-end : attend 2 h, pour que le mail arrive à 9h. En semaine, cette étape est sautée. |
+| 4 | **Rédacteur des infos** | Agent IA (Gemini). Il fait au moins 10 recherches sur internet avec **Recherches internet sur Brave**, puis rédige le mail en HTML. |
+| 5 | **Rédacteur du podcast** | Agent IA (Gemini). Il transforme le mail en script de podcast, à lire à voix haute. |
+| 6 | **Génération d'un Audio** | OpenAI lit le script avec la voix `nova` et produit un fichier MP3. |
+| 7 | **Renommage du fichier MP3** | Nomme la pièce jointe `briefing-AAAA-MM-JJ.mp3`, avec la date du jour. |
+| 8 | **Envoi par Gmail** | Envoie le mail HTML avec le MP3 en pièce jointe. |
 
-**Résilience.** Chaque agent a un modèle principal (`gemini-flash-latest`) et un modèle de secours (`gemini-flash-lite-latest`). Les appels sont relancés en cas d'erreur (par exemple un 503 « high demand » de Gemini).
+### Le mail
 
-## Installation
+Il contient, dans cet ordre : la date et la météo de Paris, le football de la veille (5 matchs au maximum, avec les scores), la France, le Monde, Armée & Défense, Business & Éco, Tech & IA, « Ce jour en [année] » et une citation. Le dimanche s'y ajoute un résumé de la semaine.
 
-1. **Prérequis** : une instance n8n (Cloud ou auto-hébergée) et le nœud communautaire `@brave/n8n-nodes-brave-search`.
-2. **Importer** [`Projet Workflow/Projet en JSON/workflow/briefing-matinal.json`](Projet%20Workflow/Projet%20en%20JSON/workflow/briefing-matinal.json) : *Workflows → Import from file*.
-3. **Associer les identifiants** (aucun identifiant n'est versionné dans ce dépôt) :
+### Le podcast
 
-   | Nœuds | Identifiant à créer |
-   |---|---|
-   | `Using Gemini*` (4 nœuds) | Google Gemini (PaLM) API |
-   | `Searching On Internet` | Brave Search API |
-   | `Podcast Voice (MP3)` | OpenAI API (ou crédits Gateway n8n Cloud) |
-   | `Send Final Mail` | Gmail OAuth2 |
+Le script dure environ 3 minutes à l'oral. Il suit la trame du mail et n'utilise que ses informations : humour et complicité sur les sujets légers, sobriété sur les sujets graves. Il est écrit avec plus de créativité que le mail (température 0,9).
 
-4. **Changer le destinataire** dans `Send Final Mail` (champ *To*, `votre.adresse@example.com` par défaut).
-5. **Tester** avec *Execute workflow* : un vrai mail est envoyé à chaque test.
-6. **Activer** le workflow (bouton *Publish*) pour lancer le planning quotidien.
+### Fiabilité
 
-## Personnalisation
+- **Zéro invention.** L'agent n'écrit que ce qu'un résultat de recherche affirme explicitement. Une information douteuse ou incomplète est retirée, jamais devinée.
+- **Les nuances sont conservées.** « Prévu », « attendu » ou « devrait » ne deviennent jamais « adopté » ou « décidé ».
+- **Les sources sont datées.** Les faits de plus de deux jours sont datés, et les simples titres de pages d'accueil sont écartés.
+- **Les scores sont exacts.** Un match n'apparaît que si les deux équipes, la compétition et le score figurent dans les résultats.
+- **Des relances automatiques.** Chaque agent a un modèle Gemini principal et un modèle de secours, et les étapes sont relancées en cas d'erreur.
 
-| Je veux… | Je modifie… |
-|---|---|
-| Changer l'heure d'envoi | `Every Day at 07:00AM` (heure) et `Delay 2h` (décalage week-end) |
-| Changer la voix | `Podcast Voice (MP3)` → *Voice* (`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`) |
-| Changer la longueur du podcast | `Projet Workflow/Projet en JSON/prompts/podcast-writer.user.md` (bloc `<duree_et_longueur>`) |
-| Changer les rubriques ou le ton | `Projet Workflow/Projet en JSON/prompts/news-redactor.user.md` et `Projet Workflow/Projet en JSON/prompts/podcast-writer.user.md` |
-| Changer de modèle | Les 4 nœuds `Using Gemini*` |
+### Les prompts
 
-## Les prompts
-
-Les prompts suivent une structure XML unique, du même modèle pour les deux agents :
+Les deux agents utilisent la même structure XML :
 
 ```
-<role>          → message système de l'agent
+<role>          → le rôle de l'agent
 <instructions>
-  <goal>        → objectif
-  <context>     → contexte, règles de fidélité, contraintes
-  <examples>    → 3 exemples fictifs et très variés
+  <goal>        → l'objectif
+  <context>     → le contexte et les règles
+  <examples>    → 3 exemples très variés
   <output_format>
 </instructions>
-<inputs>        → variables du jour injectées par n8n (dates, briefing…)
+<inputs>        → les données du jour (dates, résultats de recherche, briefing)
 ```
 
-Ils sont stockés en fichiers lisibles dans [`Projet Workflow/Projet en JSON/prompts/`](Projet%20Workflow/Projet%20en%20JSON/prompts/), puis injectés dans le workflow par le script de build :
+## Utiliser le workflow
 
-```bash
-python3 "Projet Workflow/Projet en JSON/scripts/build_workflow.py"   # régénère le JSON dans "Projet Workflow/Projet en JSON/workflow/"
-```
+1. Il faut une instance n8n et le nœud communautaire `@brave/n8n-nodes-brave-search`.
+2. Créez les identifiants suivants dans n8n :
 
-**Règles anti-erreurs** (les erreurs factuelles sont le principal risque d'un briefing généré par IA) :
+   | Nœuds | Identifiant |
+   |---|---|
+   | Les 4 nœuds Gemini | Google Gemini (PaLM) API |
+   | Recherches internet sur Brave | Brave Search API |
+   | Génération d'un Audio | OpenAI API |
+   | Envoi par Gmail | Gmail OAuth2 |
 
-- au moins 10 recherches distinctes avant d'écrire ;
-- chaque fait doit être appuyé par un extrait de recherche daté, sans rien ajouter ;
-- « prévu / devrait / étudie » ne deviennent jamais « adopté / validé / décidé » ;
-- les faits de plus de 2 jours sont datés ; les titres de pages d'accueil sans détail sont écartés ;
-- football : 5 matchs maximum, scores exacts uniquement, deux recherches obligatoires avant d'écrire « Pas de grand match hier ».
-
-
-## Structure du dépôt
-
-```
-.
-├── README.md
-├── Skills/
-│   ├── interview/SKILL.md           clarifier une idée de projet par des questions guidées
-│   ├── hostile-review/SKILL.md      audit adversarial avant livraison
-│   └── doubt-driven-dev/SKILL.md    vérification systématique des faits et du code
-└── Projet Workflow/
-    ├── README.md
-    ├── briefing-matinal.workflow.ts workflow au format TypeScript du SDK n8n
-    ├── generate_workflow_ts.py      régénère le .ts depuis les prompts
-    └── Projet en JSON/
-        ├── LICENSE
-        ├── .gitignore
-        ├── docs/
-        │   └── exemple-briefing.html        aperçu du rendu (données fictives)
-        ├── prompts/
-        │   ├── news-redactor.system.md      rôle de l'agent de rédaction
-        │   ├── news-redactor.user.md        instructions, exemples, format, inputs
-        │   ├── podcast-writer.system.md     rôle de l'animateur du podcast
-        │   └── podcast-writer.user.md       instructions, exemples, format, inputs
-        ├── scripts/
-        │   └── build_workflow.py            génère le JSON du workflow
-        └── workflow/
-            └── briefing-matinal.json        workflow n8n importable
-```
-
-## Workflow en TypeScript
-
-Le dossier [`Projet Workflow/`](Projet%20Workflow/) contient le même workflow au format TypeScript du SDK n8n : [`briefing-matinal.workflow.ts`](Projet%20Workflow/briefing-matinal.workflow.ts).
+3. Dans **Envoi par Gmail**, remplacez `votre.adresse@example.com` par votre adresse.
+4. Testez avec *Execute workflow* (un vrai mail est envoyé), puis activez le workflow avec *Publish*.
 
 ## Skills
 
-Le dossier [`Skills/`](Skills/) regroupe trois skills Claude utilisés pendant la construction de ce projet : `interview`, `hostile-review` et `doubt-driven-dev` (vérification rigoureuse des informations).
+Le dossier [`Skills/`](Skills/) contient trois skills Claude utilisés pendant la construction du projet : `interview`, `hostile-review` et `doubt-driven-dev`.
 
 ## Licence
 
-[MIT](Projet%20Workflow/Projet%20en%20JSON/LICENSE)
+[MIT](LICENSE)
